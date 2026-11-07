@@ -1,0 +1,93 @@
+services:
+  registry:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: p2p-registry
+    command: npm run registry
+    ports:
+      - "7000:7000"
+    environment:
+      - REGISTRY_PORT=7000
+    networks:
+      - p2p-net
+
+  peer-alice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: p2p-peer-alice
+    command: npx tsx peer/index.ts
+    ports:
+      - "8001:8001"
+      - "3001:3001"
+    environment:
+      - PEER_NAME=Alice
+      - PEER_ADVERTISE_IP=peer-alice
+      - PEER_TCP_PORT=8001
+      - PEER_UI_PORT=3001
+      - DISCOVERY_MODE=dht
+      - BOOTSTRAP_PEERS=
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=7000
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./logs:/app/logs
+    networks:
+      - p2p-net
+
+  peer-bob:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: p2p-peer-bob
+    command: npx tsx peer/index.ts
+    ports:
+      - "8002:8002"
+      - "3002:3002"
+    environment:
+      - PEER_NAME=Bob
+      - PEER_ADVERTISE_IP=peer-bob
+      - PEER_TCP_PORT=8002
+      - PEER_UI_PORT=3002
+      - DISCOVERY_MODE=dht
+      - BOOTSTRAP_PEERS=peer-alice:8001
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=7000
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./logs:/app/logs
+    networks:
+      - p2p-net
+
+  peer-charlie:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: p2p-peer-charlie
+    command: npx tsx peer/index.ts
+    ports:
+      - "8003:8003"
+      - "3003:3003"
+    environment:
+      - PEER_NAME=Charlie
+      - PEER_ADVERTISE_IP=peer-charlie
+      - PEER_TCP_PORT=8003
+      - PEER_UI_PORT=3003
+      - DISCOVERY_MODE=dht
+      - BOOTSTRAP_PEERS=peer-bob:8002,peer-alice:8001
+      - REGISTRY_HOST=registry
+      - REGISTRY_PORT=7000
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./logs:/app/logs
+    networks:
+      - p2p-net
+
+networks:
+  p2p-net:
+    driver: bridge
+

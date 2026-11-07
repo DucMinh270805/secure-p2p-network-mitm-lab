@@ -1,0 +1,10 @@
+node_modules
+ui
+dist
+.git
+tests
+downloads
+data/*.db*
+logs
+*.log
+

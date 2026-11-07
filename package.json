@@ -1,0 +1,28 @@
+{
+  "name": "secure-p2p-network",
+  "version": "1.0.0",
+  "description": "Thiet ke va hien thuc mang phan tan P2P dua tren Kademlia DHT va dinh tuyen Mesh Relay ket hop bao mat KDC",
+  "type": "module",
+  "scripts": {
+    "registry": "tsx registry/index.ts",
+    "peer": "tsx peer/index.ts",
+    "peer:alice": "tsx peer/index.ts --name Alice --tcpPort 8001 --uiPort 3001 --mode dht",
+    "peer:bob": "tsx peer/index.ts --name Bob --tcpPort 8002 --uiPort 3002 --mode dht --bootstrap 127.0.0.1:8001",
+    "peer:charlie": "tsx peer/index.ts --name Charlie --tcpPort 8003 --uiPort 3003 --mode dht --bootstrap 127.0.0.1:8002",
+    "test:dht:unit": "tsx tests/test-dht-unit.ts",
+    "test:dht": "tsx tests/test-pure-p2p-dht.ts",
+    "test:mesh": "tsx tests/test-mesh-relay-routing.ts",
+    "test:persistence": "tsx tests/test-dht-persistence-mailbox.ts",
+    "test:healing": "tsx tests/test-partition-healing-identity.ts",
+    "test": "tsx tests/test-mesh-relay-routing.ts"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
